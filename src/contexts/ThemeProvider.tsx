@@ -20,7 +20,7 @@ export const CustomThemeProvider = ({ children }: { children: ReactNode }) => {
           prevMode === 'light' ? 'dark' : 'light'
         )
       },
-      mode,
+      theme: mode,
     }),
     [mode]
   )
@@ -32,12 +32,7 @@ export const CustomThemeProvider = ({ children }: { children: ReactNode }) => {
   })
 
   return (
-    <themeContext.Provider
-      value={{
-        toggleColorMode: colorMode.toggleColorMode,
-        theme: colorMode.mode,
-      }}
-    >
+    <themeContext.Provider value={colorMode}>
       <ThemeProvider theme={darkTheme}>{children}</ThemeProvider>
     </themeContext.Provider>
   )

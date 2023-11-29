@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const columnHelper = createColumnHelper<Patient>()
 
-export const patientColumns = [
+const patientColumns = [
   columnHelper.display({
     id: 'id',
     header: 'Patient ID',
@@ -57,3 +57,5 @@ export const patientColumns = [
     ),
   }),
 ]
+
+export default patientColumns

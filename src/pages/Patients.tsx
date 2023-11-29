@@ -1,5 +1,5 @@
 import TableComponent from '../components/Table'
-import { patientColumns } from '../components/Table/columns/patients'
+import patientColumns from '../components/Table/columns/patients'
 import patientsHttp from '../services/fetcher/patients/patientsHttp'
 import Page from '../components/UI/Page'
 

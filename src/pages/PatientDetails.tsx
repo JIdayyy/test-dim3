@@ -64,10 +64,10 @@ export default function PatientDetailsPage() {
         }}
       >
         <Typography variant="h4">Patient Details</Typography>
-        <TextWithLabel label={'FirstName'} text={data?.data.firstName} />
-        <TextWithLabel label={'LastName'} text={data?.data.lastName} />
-        <TextWithLabel label={'BirthDate'} text={data?.data.birthDate} />
-        <TextWithLabel label={'Sex'} text={data?.data.sex} />
+        <TextWithLabel label="FirstName" text={data?.data.firstName} />
+        <TextWithLabel label="LastName" text={data?.data.lastName} />
+        <TextWithLabel label="BirthDate" text={data?.data.birthDate} />
+        <TextWithLabel label="Sex" text={data?.data.sex} />
       </Card>
     </Page>
   )

@@ -7,39 +7,37 @@ export default function Navbar() {
   const { toggleColorMode, theme } = useThemeContext()
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Patient Management
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Patient Management
+        </Typography>
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="body1" component="div">
+            Switch to {theme === 'light' ? 'dark' : 'light'} mode
           </Typography>
+          <Switch onChange={() => toggleColorMode()} />
+        </Box>
 
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <Typography variant="body1" component="div">
-              Switch to {theme === 'light' ? 'dark' : 'light'} mode
-            </Typography>
-            <Switch onChange={() => toggleColorMode()} />
-          </Box>
-
-          <Button
-            sx={{
-              color: 'white',
-              borderColor: 'white',
-              marginLeft: '1rem',
-            }}
-            variant="outlined"
-            onClick={logout}
-          >
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
-    </>
+        <Button
+          sx={{
+            color: 'white',
+            borderColor: 'white',
+            marginLeft: '1rem',
+          }}
+          variant="outlined"
+          onClick={logout}
+        >
+          Logout
+        </Button>
+      </Toolbar>
+    </AppBar>
   )
 }

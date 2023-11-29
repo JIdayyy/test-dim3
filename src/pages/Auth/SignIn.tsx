@@ -1,9 +1,16 @@
 import { useAuth } from '../../contexts/AuthContext'
-import { Box, Button, Stack, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Stack,
+  TextField,
+  Typography,
+  styled,
+} from '@mui/material'
 import { useForm } from 'react-hook-form'
-import styled from '@emotion/styled'
+import styledEmotion from '@emotion/styled'
 
-const FormContainer = styled.form`
+const FormContainer = styledEmotion.form`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,7 +27,7 @@ const PageContainer = styled(Box)`
   justify-content: center;
   width: 100vw;
   height: 100vh;
-  background-color: ${({ theme }: any) => {
+  background-color: ${({ theme }) => {
     return theme.palette.background.default
   }};
 `
@@ -50,13 +57,13 @@ export default function SignInPage() {
 
           <TextField
             size="medium"
-            label={'Email'}
+            label="Email"
             {...register('username')}
             placeholder="Email"
           />
           <TextField
             size="medium"
-            label={'Password'}
+            label="Password"
             {...register('password')}
             placeholder="Password"
           />

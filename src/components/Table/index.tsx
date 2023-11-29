@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import {
   ColumnDef,
   flexRender,
@@ -45,8 +46,10 @@ const TableBodySkeletton = ({
   return (
     <>
       {Array.from(Array(number).keys()).map((_, index) => (
+        // eslint-disable-next-line react/no-array-index-key
         <TableRow key={index}>
           {Array.from(Array(columnsNumber).keys()).map((_, index) => (
+            // eslint-disable-next-line react/no-array-index-key
             <TableCell key={index}>
               <Skeleton variant="text" />
             </TableCell>
@@ -80,7 +83,7 @@ export default function TableComponent<T>({
   })
 
   const table = useReactTable({
-    columns: columns,
+    columns,
     data: data?.data.content || [],
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
