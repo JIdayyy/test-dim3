@@ -17,7 +17,6 @@ import {
   Paper,
   TablePagination,
   Skeleton,
-  Box,
 } from '@mui/material'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import usePagination from './hooks/usePagination'
@@ -94,7 +93,7 @@ export default function TableComponent<T>({
     manualPagination: true,
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
-    debugTable: true,
+    debugTable: import.meta.env.NODE_ENV !== 'development',
   })
 
   return (
@@ -130,7 +129,11 @@ export default function TableComponent<T>({
               </TableRow>
             ))}
           </TableHead>
-          <TableBody>
+          <TableBody
+            sx={{
+              minHeight: 600,
+            }}
+          >
             {!isLoading ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
@@ -156,29 +159,27 @@ export default function TableComponent<T>({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          width: '100%',
-        }}
-      >
-        <TablePagination
-          sx={{
-            width: '100%',
-          }}
-          count={data?.data.totalElements || 0}
-          page={paginationState.page}
-          rowsPerPage={paginationState.pageSize}
-          onRowsPerPageChange={async (event) => {
-            handlePageSizeChange(+event.target.value)
-          }}
-          onPageChange={async (_, newPage) => {
-            handlePageChange(newPage)
-          }}
-        />
-      </Box>
+      {/* This is a little trick to make the pagination component sticky to bottom and avoid console warnings */}
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TablePagination
+              sx={{
+                width: '100%',
+              }}
+              count={data?.data.totalElements || 0}
+              page={paginationState.page}
+              rowsPerPage={paginationState.pageSize}
+              onRowsPerPageChange={async (event) => {
+                handlePageSizeChange(+event.target.value)
+              }}
+              onPageChange={async (_, newPage) => {
+                handlePageChange(newPage)
+              }}
+            />
+          </TableRow>
+        </TableBody>
+      </Table>
     </Paper>
   )
 }

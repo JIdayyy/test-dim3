@@ -3,8 +3,7 @@ import SignInPage from '../pages/Auth/SignIn'
 
 const authRoutes: RouteObject[] = [
   {
-    path: '/',
-
+    path: '/login',
     element: <SignInPage />,
   },
   {
@@ -13,7 +12,7 @@ const authRoutes: RouteObject[] = [
   },
   {
     path: '*',
-    element: <Navigate to="/" />,
+    element: <Navigate to="/login" />,
   },
 ]
 
