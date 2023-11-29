@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import { useAuth } from '../../contexts/AuthContext'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Navbar() {
   const { logout } = useAuth()
@@ -31,8 +32,25 @@ export default function Navbar() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer anchor="left" open={isOpened} onClose={toggleDrawer}>
+      <Drawer
+        sx={{
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: 240,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        }}
+        anchor="left"
+        open={isOpened}
+        onClose={toggleDrawer}
+      >
         <span>MENU</span>
+        <Link to={'/'}>Home</Link>
+        <Link to={'/patients'}>Patients</Link>
+
         <Button type="button" onClick={logout}>
           Logout
         </Button>
