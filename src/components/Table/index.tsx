@@ -68,9 +68,8 @@ export default function TableComponent<T>({
       defaultPageSize,
       defaultPageIndex,
     })
-
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['patients'],
+  const { data, isLoading } = useQuery({
+    queryKey: ['patients', paginationState.page, paginationState.pageSize],
     queryFn: () =>
       fetchFn({
         page: paginationState.page,
@@ -101,13 +100,28 @@ export default function TableComponent<T>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableCell key={header.id} style={{ width: header.getSize() }}>
+                <TableCell
+                  sx={{
+                    position: 'relative',
+                  }}
+                  key={header.id}
+                  style={{ width: header.getSize() }}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                  <div
+                    {...{
+                      onMouseDown: header.getResizeHandler(),
+                      onTouchStart: header.getResizeHandler(),
+                      className: `hover:bg-white  absolute touch cursor-col-resize right-0 top-0  w-[2px] h-full bg-gray-300 z-50 ${
+                        header.column.getIsResizing() ? 'isResizing' : ''
+                      }`,
+                    }}
+                  />
                 </TableCell>
               ))}
             </TableRow>
@@ -130,7 +144,6 @@ export default function TableComponent<T>({
           ) : (
             <TableBodySkeletton number={10} columnsNumer={columns.length} />
           )}
-          {/* ... (empty rows) */}
         </TableBody>
         <TableFooter>
           {table.getFooterGroups().map((footerGroup) => (
@@ -147,21 +160,21 @@ export default function TableComponent<T>({
               ))}
             </TableRow>
           ))}
+          <TableRow>
+            <TablePagination
+              count={data?.data.totalElements || 0}
+              page={paginationState.page}
+              rowsPerPage={paginationState.pageSize}
+              onRowsPerPageChange={async (event) => {
+                handlePageSizeChange(+event.target.value)
+              }}
+              onPageChange={async (_, newPage) => {
+                handlePageChange(newPage)
+              }}
+            />
+          </TableRow>
         </TableFooter>
       </Table>
-      <TablePagination
-        count={data?.data.totalElements || 0}
-        page={paginationState.page}
-        rowsPerPage={paginationState.pageSize}
-        onRowsPerPageChange={async (event) => {
-          handlePageSizeChange(+event.target.value)
-          await refetch()
-        }}
-        onPageChange={async (_, newPage) => {
-          handlePageChange(newPage)
-          await refetch()
-        }}
-      />
     </TableContainer>
   )
 }

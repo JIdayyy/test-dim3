@@ -9,6 +9,21 @@ const authHttp = {
         'Content-Type': 'application/json',
       },
     }),
+
+  refreshToken: (token: string) =>
+    axiosInstance.post<{
+      token: string
+    }>(
+      '/token-refresh',
+      {
+        token: token,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    ),
 }
 
 export default authHttp

@@ -7,6 +7,7 @@ const buildHeaders = () => {
   const baseHeaders = {
     'Content-Type': 'application/json',
     Accept: '*/*',
+    'Access-Control-Allow-Origin': '*',
   }
 
   if (token) {

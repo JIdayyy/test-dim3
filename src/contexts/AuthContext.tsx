@@ -29,8 +29,25 @@ const initialState = {
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [authState, setAuthState] = useState<AuthState>(initialState)
 
-  const { mutateAsync } = useMutation({
+  const { mutateAsync: loginMutation } = useMutation({
     mutationFn: (credentials: TCredentials) => authHttp.signIn(credentials),
+    onSuccess: (data) => {
+      if (data.status === 401) {
+        return refreshTokenMutation()
+      }
+
+      setAuthState((prevState) => ({
+        ...prevState,
+        isAuth: true,
+      }))
+      localStorage.setItem('token', data.data.token)
+      axiosInstance.defaults.headers.Authorization = `Bearer ${data.data.token}`
+    },
+  })
+
+  const { mutateAsync: refreshTokenMutation } = useMutation({
+    mutationFn: () =>
+      authHttp.refreshToken(localStorage.getItem('token') as string),
     onSuccess: (data) => {
       setAuthState((prevState) => ({
         ...prevState,
@@ -42,7 +59,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   })
 
   const login = async (credentials: TCredentials) => {
-    await mutateAsync(credentials)
+    await loginMutation(credentials)
   }
 
   const logout = () => {

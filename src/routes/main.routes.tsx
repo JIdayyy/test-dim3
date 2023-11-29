@@ -1,7 +1,7 @@
 import { Navigate, RouteObject, useRoutes } from 'react-router-dom'
-import HomePage from '../pages/Home'
 import MainLayout from '../components/Layouts/MainLayout'
-import AboutPage from '../pages/About'
+import PatientDetailsPage from '../pages/PatientDetails'
+import PatientsPage from '../pages/Patients'
 
 const routes: RouteObject[] = [
   {
@@ -10,11 +10,11 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/',
-        element: <HomePage />,
+        element: <PatientsPage />,
       },
       {
-        path: '/about',
-        element: <AboutPage />,
+        path: '/patients/:id',
+        element: <PatientDetailsPage />,
       },
     ],
   },
