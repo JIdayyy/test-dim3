@@ -1,7 +1,17 @@
-import { createContext, ReactNode, useContext, useState } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { useMutation } from '@tanstack/react-query'
+import authHttp from '../services/fetcher/auth/authHttp'
+import axiosInstance from '../services/fetcher/axiosInstance'
 
 type AuthContext = {
-  login: () => void
+  login: (credentials: TCredentials) => void
   logout: () => void
   isAuth: boolean
 }
@@ -18,22 +28,48 @@ const initialState = {
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [authState, setAuthState] = useState<AuthState>(initialState)
-  const login = () => {
-    setAuthState((prevState) => ({
-      ...prevState,
-      isAuth: true,
-    }))
+
+  const { mutateAsync } = useMutation({
+    mutationFn: (credentials: TCredentials) => authHttp.signIn(credentials),
+    onSuccess: (data) => {
+      setAuthState((prevState) => ({
+        ...prevState,
+        isAuth: true,
+      }))
+      localStorage.setItem('token', data.data.token)
+      axiosInstance.defaults.headers.Authorization = `Bearer ${data.data.token}`
+    },
+  })
+
+  const login = async (credentials: TCredentials) => {
+    await mutateAsync(credentials)
   }
 
   const logout = () => {
+    localStorage.removeItem('token')
     setAuthState((prevState) => ({
       ...prevState,
       isAuth: false,
     }))
   }
 
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      setAuthState((prevState) => ({
+        ...prevState,
+        isAuth: true,
+      }))
+    }
+  }, [])
+
+  const memoizedValue = useMemo(
+    () => ({ login, logout, isAuth: authState.isAuth }),
+    [authState.isAuth]
+  )
+
   return (
-    <authContext.Provider value={{ login, logout, isAuth: authState.isAuth }}>
+    <authContext.Provider value={memoizedValue}>
       {children}
     </authContext.Provider>
   )
