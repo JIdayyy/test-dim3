@@ -16,7 +16,7 @@ const authHttp = {
     }>(
       '/token-refresh',
       {
-        token: token,
+        token,
       },
       {
         headers: {

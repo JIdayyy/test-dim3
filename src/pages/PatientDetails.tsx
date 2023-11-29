@@ -1,7 +1,48 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import patientsHttp from '../services/fetcher/patients/patientsHttp'
-import { Box, Typography } from '@mui/material'
+import { Box, Button, Card, Typography } from '@mui/material'
+import Page from '../components/UI/Page'
+import { ArrowBackIosNew } from '@mui/icons-material'
+
+const TextWithLabel = ({ label, text }: { label: string; text: string }) => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '0.5rem',
+      }}
+    >
+      <Typography
+        sx={{
+          fontWeight: 'bold',
+        }}
+        variant="body1"
+      >
+        {label}
+      </Typography>
+      <Typography variant="body1">{text}</Typography>
+    </Box>
+  )
+}
+
+const NavigateBack = () => {
+  const navigate = useNavigate()
+  return (
+    <Button
+      sx={{
+        marginBottom: '1rem',
+      }}
+      variant="outlined"
+      onClick={() => navigate(-1)}
+    >
+      <ArrowBackIosNew />
+    </Button>
+  )
+}
 
 export default function PatientDetailsPage() {
   const { id } = useParams()
@@ -11,15 +52,23 @@ export default function PatientDetailsPage() {
   })
 
   if (isLoading) return <div>Loading...</div>
+  if (!data) return <div>Patient not found</div>
 
   return (
-    <Box>
-      <Typography variant="h4">Patient Details</Typography>
+    <Page>
+      <NavigateBack />
 
-      <Typography variant="body1">{data?.data.firstName}</Typography>
-      <Typography variant="body1">{data?.data.lastName}</Typography>
-      <Typography variant="body1">{data?.data.birthDate}</Typography>
-      <Typography variant="body1">{data?.data.sex}</Typography>
-    </Box>
+      <Card
+        sx={{
+          padding: '1rem',
+        }}
+      >
+        <Typography variant="h4">Patient Details</Typography>
+        <TextWithLabel label="FirstName" text={data?.data.firstName} />
+        <TextWithLabel label="LastName" text={data?.data.lastName} />
+        <TextWithLabel label="BirthDate" text={data?.data.birthDate} />
+        <TextWithLabel label="Sex" text={data?.data.sex} />
+      </Card>
+    </Page>
   )
 }

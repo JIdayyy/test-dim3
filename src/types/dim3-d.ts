@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 interface Patient {
-  metadata: any
+  metadata: Metadata
   id: string
   firstName: string
   lastName: string

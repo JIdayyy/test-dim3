@@ -9,21 +9,25 @@ import {
 import { useMutation } from '@tanstack/react-query'
 import authHttp from '../services/fetcher/auth/authHttp'
 import axiosInstance from '../services/fetcher/axiosInstance'
+import { isAxiosError } from 'axios'
 
 type AuthContext = {
   login: (credentials: TCredentials) => void
   logout: () => void
   isAuth: boolean
+  loading?: boolean
 }
 
 type AuthState = {
   isAuth: boolean
+  loading?: boolean
 }
 
 const authContext = createContext<AuthContext | null>(null)
 
 const initialState = {
   isAuth: false,
+  loading: true,
 }
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
@@ -31,17 +35,22 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   const { mutateAsync: loginMutation } = useMutation({
     mutationFn: (credentials: TCredentials) => authHttp.signIn(credentials),
-    onSuccess: (data) => {
-      if (data.status === 401) {
-        return refreshTokenMutation()
-      }
-
+    onSuccess: async (data) => {
       setAuthState((prevState) => ({
         ...prevState,
         isAuth: true,
+        loading: false,
       }))
       localStorage.setItem('token', data.data.token)
       axiosInstance.defaults.headers.Authorization = `Bearer ${data.data.token}`
+    },
+    onError: () => {
+      setAuthState((prevState) => ({
+        ...prevState,
+        isAuth: false,
+        loading: false,
+      }))
+      localStorage.removeItem('token')
     },
   })
 
@@ -52,13 +61,28 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       setAuthState((prevState) => ({
         ...prevState,
         isAuth: true,
+        loading: false,
       }))
       localStorage.setItem('token', data.data.token)
       axiosInstance.defaults.headers.Authorization = `Bearer ${data.data.token}`
     },
+    onError: (data) => {
+      if (isAxiosError(data) && data.status === 401) {
+        setAuthState((prevState) => ({
+          ...prevState,
+          isAuth: false,
+          loading: false,
+        }))
+        localStorage.removeItem('token')
+      }
+    },
   })
 
   const login = async (credentials: TCredentials) => {
+    setAuthState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }))
     await loginMutation(credentials)
   }
 
@@ -72,17 +96,31 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token')
-    if (token) {
+    if (token && !authState.isAuth) {
+      refreshTokenMutation().then(() => {
+        setAuthState((prevState) => ({
+          ...prevState,
+          loading: false,
+          isAuth: true,
+        }))
+      })
+      axiosInstance.defaults.headers.Authorization = `Bearer ${token}`
+    } else {
       setAuthState((prevState) => ({
         ...prevState,
-        isAuth: true,
+        loading: false,
       }))
     }
   }, [])
 
   const memoizedValue = useMemo(
-    () => ({ login, logout, isAuth: authState.isAuth }),
-    [authState.isAuth]
+    () => ({
+      login,
+      logout,
+      isAuth: authState.isAuth,
+      loading: authState.loading,
+    }),
+    [authState]
   )
 
   return (
