@@ -32,15 +32,25 @@ const TextWithLabel = ({ label, text }: { label: string; text: string }) => {
 const NavigateBack = () => {
   const navigate = useNavigate()
   return (
-    <Button
+    <Box
       sx={{
-        marginBottom: '1rem',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        width: '100%',
       }}
-      variant="outlined"
-      onClick={() => navigate(-1)}
     >
-      <ArrowBackIosNew />
-    </Button>
+      <Button
+        sx={{
+          marginBottom: '1rem',
+        }}
+        variant="outlined"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowBackIosNew />
+      </Button>
+    </Box>
   )
 }
 
@@ -61,6 +71,7 @@ export default function PatientDetailsPage() {
       <Card
         sx={{
           padding: '1rem',
+          width: '100%',
         }}
       >
         <Typography variant="h4">Patient Details</Typography>

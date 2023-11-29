@@ -5,7 +5,7 @@ import Page from '../components/UI/Page'
 
 export default function PatientsPage() {
   return (
-    <Page>
+    <Page center>
       <TableComponent<Patient>
         columns={patientColumns}
         fetchFn={patientsHttp.findMany}
