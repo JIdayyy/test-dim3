@@ -14,16 +14,19 @@ type AuthContext = {
   login: (credentials: TCredentials) => void
   logout: () => void
   isAuth: boolean
+  loading?: boolean
 }
 
 type AuthState = {
   isAuth: boolean
+  loading?: boolean
 }
 
 const authContext = createContext<AuthContext | null>(null)
 
 const initialState = {
   isAuth: false,
+  loading: true,
 }
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
@@ -31,14 +34,20 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   const { mutateAsync: loginMutation } = useMutation({
     mutationFn: (credentials: TCredentials) => authHttp.signIn(credentials),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data.status === 401) {
-        return refreshTokenMutation()
+        setAuthState((prevState) => ({
+          ...prevState,
+          isAuth: false,
+          loading: false,
+        }))
+        return await refreshTokenMutation()
       }
 
       setAuthState((prevState) => ({
         ...prevState,
         isAuth: true,
+        loading: false,
       }))
       localStorage.setItem('token', data.data.token)
       axiosInstance.defaults.headers.Authorization = `Bearer ${data.data.token}`
@@ -52,6 +61,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       setAuthState((prevState) => ({
         ...prevState,
         isAuth: true,
+        loading: false,
       }))
       localStorage.setItem('token', data.data.token)
       axiosInstance.defaults.headers.Authorization = `Bearer ${data.data.token}`
@@ -59,6 +69,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   })
 
   const login = async (credentials: TCredentials) => {
+    setAuthState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }))
     await loginMutation(credentials)
   }
 
@@ -71,17 +85,31 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
+    setAuthState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }))
     const token = localStorage.getItem('token')
     if (token) {
       setAuthState((prevState) => ({
         ...prevState,
         isAuth: true,
+        loading: false,
       }))
     }
+    setAuthState((prevState) => ({
+      ...prevState,
+      loading: false,
+    }))
   }, [])
 
   const memoizedValue = useMemo(
-    () => ({ login, logout, isAuth: authState.isAuth }),
+    () => ({
+      login,
+      logout,
+      isAuth: authState.isAuth,
+      loading: authState.loading,
+    }),
     [authState.isAuth]
   )
 

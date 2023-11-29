@@ -13,10 +13,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TableFooter,
   Paper,
   TablePagination,
   Skeleton,
+  Box,
 } from '@mui/material'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import usePagination from './hooks/usePagination'
@@ -37,16 +37,16 @@ interface TableProps<T> {
 
 const TableBodySkeletton = ({
   number,
-  columnsNumer,
+  columnsNumber,
 }: {
   number: number
-  columnsNumer: number
+  columnsNumber: number
 }) => {
   return (
     <>
       {Array.from(Array(number).keys()).map((_, index) => (
         <TableRow key={index}>
-          {Array.from(Array(columnsNumer).keys()).map((_, index) => (
+          {Array.from(Array(columnsNumber).keys()).map((_, index) => (
             <TableCell key={index}>
               <Skeleton variant="text" />
             </TableCell>
@@ -68,6 +68,7 @@ export default function TableComponent<T>({
       defaultPageSize,
       defaultPageIndex,
     })
+
   const { data, isLoading } = useQuery({
     queryKey: ['patients', paginationState.page, paginationState.pageSize],
     queryFn: () =>
@@ -94,87 +95,87 @@ export default function TableComponent<T>({
   })
 
   return (
-    <TableContainer component={Paper}>
-      <Table style={{ width: '100%' }}>
-        <TableHead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableCell
-                  sx={{
-                    position: 'relative',
-                  }}
-                  key={header.id}
-                  style={{ width: header.getSize() }}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  <div
-                    {...{
-                      onMouseDown: header.getResizeHandler(),
-                      onTouchStart: header.getResizeHandler(),
-                      className: `hover:bg-white  absolute touch cursor-col-resize right-0 top-0  w-[2px] h-full bg-gray-300 z-50 ${
-                        header.column.getIsResizing() ? 'isResizing' : ''
-                      }`,
-                    }}
-                  />
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {!isLoading ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
+    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+      <TableContainer sx={{ maxHeight: 800, height: 670 }}>
+        <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
                   <TableCell
-                    key={cell.id}
-                    style={{ width: cell.column.getSize() }}
+                    sx={{
+                      position: 'relative',
+                    }}
+                    key={header.id}
+                    style={{ width: header.getSize() }}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    <div
+                      {...{
+                        onMouseDown: header.getResizeHandler(),
+                        onTouchStart: header.getResizeHandler(),
+                        className: `hover:bg-white  absolute touch cursor-col-resize right-0 top-0  w-[2px] h-full bg-gray-300 z-50`,
+                      }}
+                    />
                   </TableCell>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableBodySkeletton number={10} columnsNumer={columns.length} />
-          )}
-        </TableBody>
-        <TableFooter>
-          {table.getFooterGroups().map((footerGroup) => (
-            <TableRow key={footerGroup.id}>
-              {footerGroup.headers.map((header) => (
-                <TableCell key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.footer,
-                        header.getContext()
+            ))}
+          </TableHead>
+          <TableBody>
+            {!isLoading ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      style={{ width: cell.column.getSize() }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
                       )}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-          <TableRow>
-            <TablePagination
-              count={data?.data.totalElements || 0}
-              page={paginationState.page}
-              rowsPerPage={paginationState.pageSize}
-              onRowsPerPageChange={async (event) => {
-                handlePageSizeChange(+event.target.value)
-              }}
-              onPageChange={async (_, newPage) => {
-                handlePageChange(newPage)
-              }}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableBodySkeletton
+                number={paginationState.pageSize}
+                columnsNumber={columns.length}
+              />
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        <TablePagination
+          sx={{
+            width: '100%',
+          }}
+          count={data?.data.totalElements || 0}
+          page={paginationState.page}
+          rowsPerPage={paginationState.pageSize}
+          onRowsPerPageChange={async (event) => {
+            handlePageSizeChange(+event.target.value)
+          }}
+          onPageChange={async (_, newPage) => {
+            handlePageChange(newPage)
+          }}
+        />
+      </Box>
+    </Paper>
   )
 }
