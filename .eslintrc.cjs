@@ -15,7 +15,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
-    project: './tsconfig.json',
+    project: ['./tsconfig.json', './tsconfig.node.json'],
     ecmaVersion: 12,
     sourceType: 'module',
   },
@@ -27,6 +27,8 @@ module.exports = {
     'react/prop-types': 0,
     'react/require-default-props': 0,
     'react/no-fc-default-props': 0,
+    "react/function-component-definition": 0,
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
   },
   ignorePatterns: ['.eslintrc.js'],
 }
