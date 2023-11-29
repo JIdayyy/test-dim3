@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "prettify": "prettier --write src/",
-    "fmt-lint": "npm run prettify && npm run lint"
+    "fmt-lint": "npm run prettify && npm run lint --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -17,8 +17,14 @@
     "@fontsource/roboto": "^5.0.8",
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.18",
+    "@tanstack/react-query": "^5.9.0",
+    "@tanstack/react-table": "^8.10.7",
+    "axios": "^1.6.2",
+    "install": "^0.13.0",
+    "npm": "^10.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
     "react-router-dom": "^6.20.0"
   },
   "devDependencies": {
