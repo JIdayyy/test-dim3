@@ -1,4 +1,5 @@
 import axiosInstance from '../axiosInstance'
+import { Dim3ApiResult } from '../../../types/dim3-d'
 
 type PaginationParams = {
   page: number
@@ -7,7 +8,7 @@ type PaginationParams = {
 
 const patientsHttp = {
   findMany: (pagination: PaginationParams) =>
-    axiosInstance.get(
+    axiosInstance.get<Dim3ApiResult<Patient>>(
       `/patient-list?page=${pagination.page}&pageSize=${pagination.pageSize}`
     ),
 }
