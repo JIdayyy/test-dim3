@@ -55,10 +55,10 @@ yarn build
 And this command to start it in production mode
 npm:
 ``` 
-npm start
+npm preview
 ```
 
 yarn:
 ``` 
-yarn start
+yarn preview
 ```
