@@ -40,7 +40,7 @@ interface TableProps<T> {
 
 const TableHeaderCell = styled(TableCell)(({ theme }) => ({
   position: 'relative',
-  color: '#000',
+  color: theme.palette.mode === 'light' ? '#fff' : '#000',
   fontWeight: 'bold',
   backgroundColor: theme.palette.primary.light,
   '&:first-child': {
