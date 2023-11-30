@@ -1,4 +1,11 @@
-import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { CssBaseline, PaletteMode } from '@mui/material'
 import { ThemeProvider } from '@emotion/react'
 import { createTheme } from '@mui/material/styles'
@@ -11,7 +18,9 @@ type TThemeContext = {
 const themeContext = createContext<TThemeContext | null>(null)
 
 export const CustomThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [mode, setMode] = useState<PaletteMode>('dark')
+  const [mode, setMode] = useState<PaletteMode>(
+    (localStorage.getItem('theme') as PaletteMode) || 'light'
+  )
   const colorMode = useMemo(
     () => ({
       // The dark mode switch would invoke this method
@@ -25,9 +34,20 @@ export const CustomThemeProvider = ({ children }: { children: ReactNode }) => {
     [mode]
   )
 
+  useEffect(() => {
+    localStorage.setItem('theme', mode)
+  }, [mode])
+
   const theme = createTheme({
     palette: {
       mode,
+    },
+    components: {
+      MuiSwitch: {
+        defaultProps: {
+          color: 'secondary',
+        },
+      },
     },
   })
 

@@ -1,10 +1,9 @@
-import { AppBar, Box, Button, Switch, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material'
 import { useAuth } from '../../contexts/AuthContext'
-import { useThemeContext } from '../../contexts/ThemeProvider'
+import ThemeSwitch from './ThemeSwitch'
 
 export default function Navbar() {
   const { logout } = useAuth()
-  const { toggleColorMode, theme } = useThemeContext()
 
   return (
     <AppBar
@@ -25,10 +24,7 @@ export default function Navbar() {
             alignItems: 'center',
           }}
         >
-          <Typography variant="body1" component="div">
-            Switch to {theme === 'light' ? 'dark' : 'light'} mode
-          </Typography>
-          <Switch onChange={() => toggleColorMode()} />
+          <ThemeSwitch />
         </Box>
 
         <Button

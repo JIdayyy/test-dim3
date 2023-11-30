@@ -18,6 +18,8 @@ export default function FormError<T extends FieldValues>({
     <Typography
       sx={{
         color: 'red',
+        fontSize: '0.75rem',
+        width: '100%',
       }}
     >
       <ErrorMessage errors={errors} name={name} />

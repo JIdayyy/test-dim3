@@ -6,20 +6,21 @@ import {
   TextField,
   Typography,
   styled,
+  CircularProgress,
+  FormControl,
 } from '@mui/material'
 import { useForm } from 'react-hook-form'
-import styledEmotion from '@emotion/styled'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import FormError from '../../components/UI/FormError'
 import LoginBg from '../../assets/login_bg.webp'
 
-const FormContainer = styledEmotion.form`
+const FormContainer = styled(FormControl)`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: fit-content;
+  width: 100%;
   height: fit-content;
   padding: 2rem;
   z-index: 10;
@@ -65,7 +66,7 @@ const schema = yup
   .required()
 
 export default function SignInPage() {
-  const { login } = useAuth()
+  const { login, loginLoading, status } = useAuth()
   const {
     handleSubmit,
     register,
@@ -82,8 +83,17 @@ export default function SignInPage() {
       <LeftPanelContainer />
 
       <FlexContainer>
-        <FormContainer onSubmit={handleSubmit(login)}>
-          <Stack spacing={2}>
+        <FormContainer as="form" onSubmit={handleSubmit(login)}>
+          <Stack
+            sx={{
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            flexGrow={1}
+            spacing={2}
+          >
             <Typography
               sx={{
                 fontWeight: 'bold',
@@ -97,7 +107,7 @@ export default function SignInPage() {
             </Typography>
 
             <TextField
-              size="medium"
+              fullWidth
               label="Email"
               {...register('username')}
               placeholder="Email"
@@ -105,15 +115,25 @@ export default function SignInPage() {
             <FormError name="username" errors={errors} />
 
             <TextField
-              size="medium"
+              fullWidth
               label="Password"
               {...register('password')}
               placeholder="Password"
             />
             <FormError name="password" errors={errors} />
 
+            {status === 401 && (
+              <Typography width="100%" color="red">
+                Invalid credentials
+              </Typography>
+            )}
+
             <Button fullWidth variant="contained" type="submit">
-              Login
+              {loginLoading ? (
+                <CircularProgress size={20} color="info" />
+              ) : (
+                'Log In'
+              )}
             </Button>
           </Stack>
         </FormContainer>
