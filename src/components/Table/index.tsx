@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 import {
   ColumnDef,
   flexRender,
@@ -19,10 +18,12 @@ import {
   styled,
 } from '@mui/material'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import usePagination from './hooks/usePagination'
 import { AxiosResponse } from 'axios'
 import Resizer from './Resizer'
 import TableBodySkeleton from './Skeletton'
+import useTableControls from './hooks/useTableControls'
+import ColumnSelectionButton from './ColumnVisibility'
+import { useEffect } from 'react'
 
 interface TableProps<T> {
   columns: ColumnDef<T, unknown>[]
@@ -42,7 +43,7 @@ const TableHeaderCell = styled(TableCell)(({ theme }) => ({
   position: 'relative',
   color: theme.palette.mode === 'light' ? '#fff' : '#000',
   fontWeight: 'bold',
-  backgroundColor: theme.palette.primary.light,
+  backgroundColor: theme.palette.secondary.main,
   '&:first-child': {
     paddingLeft: theme.spacing(3),
   },
@@ -58,18 +59,26 @@ export default function PaginatedTableComponent<T>({
   fetchFn,
   name,
 }: TableProps<T>) {
-  const { paginationState, handlePageChange, handlePageSizeChange } =
-    usePagination({
-      defaultPageSize,
-      defaultPageIndex,
-    })
+  const {
+    tableControls,
+    handlePageChange,
+    handlePageSizeChange,
+    handleColumnStateChange,
+  } = useTableControls({
+    defaultPageSize,
+    defaultPageIndex,
+    defaultColumnsState: columns.map((column) => ({
+      name: column.id as string,
+      hidden: false,
+    })),
+  })
 
   const { data, isLoading } = useQuery({
-    queryKey: [name, paginationState.page, paginationState.pageSize],
+    queryKey: [name, tableControls.page, tableControls.pageSize],
     queryFn: () =>
       fetchFn({
-        page: paginationState.page,
-        pageSize: paginationState.pageSize,
+        page: tableControls.page,
+        pageSize: tableControls.pageSize,
       }),
     placeholderData: keepPreviousData,
   })
@@ -88,6 +97,18 @@ export default function PaginatedTableComponent<T>({
     columnResizeMode: 'onChange',
     debugTable: import.meta.env.NODE_ENV !== 'development',
   })
+
+  useEffect(() => {
+    table.setColumnVisibility(
+      tableControls.columnsState.reduce(
+        (acc, state) => ({
+          ...acc,
+          [state.name]: !state.hidden,
+        }),
+        {}
+      )
+    )
+  }, [tableControls.columnsState])
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -156,7 +177,7 @@ export default function PaginatedTableComponent<T>({
               ))
             ) : (
               <TableBodySkeleton
-                number={paginationState.pageSize}
+                number={tableControls.pageSize}
                 columnsNumber={columns.length}
               />
             )}
@@ -167,13 +188,22 @@ export default function PaginatedTableComponent<T>({
       <Table>
         <TableBody>
           <TableRow>
+            <ColumnSelectionButton
+              handleColumnsVisibility={(column, hidden) => {
+                handleColumnStateChange(column, hidden)
+              }}
+              columnsState={tableControls.columnsState}
+              columns={
+                columns.map((column) => column.id as string) || ['No columns']
+              }
+            />
             <TablePagination
               sx={{
                 width: '100%',
               }}
               count={data?.data.totalElements || 0}
-              page={paginationState.page}
-              rowsPerPage={paginationState.pageSize}
+              page={tableControls.page}
+              rowsPerPage={tableControls.pageSize}
               onRowsPerPageChange={async (event) => {
                 handlePageSizeChange(+event.target.value)
               }}

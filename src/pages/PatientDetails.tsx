@@ -36,15 +36,7 @@ const Header = ({
     <NavigationContainer>
       <Stack direction="row" justifyContent="center" alignItems="center">
         <StyledLink to="/">
-          <Typography
-            sx={{
-              textDecoration: 'none',
-              color: 'white',
-            }}
-            variant="h6"
-          >
-            Patients
-          </Typography>
+          <Typography variant="h6">Patients</Typography>
         </StyledLink>
         <ArrowForwardIosRoundedIcon
           fontSize="small"

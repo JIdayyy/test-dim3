@@ -1,7 +1,9 @@
 import { Navigate, RouteObject, useRoutes } from 'react-router-dom'
 import MainLayout from '../components/Layouts/MainLayout'
-import PatientDetailsPage from '../pages/PatientDetails'
 import PatientsPage from '../pages/Patients'
+import { lazy, Suspense } from 'react'
+
+const LazyPatientsDetailsPage = lazy(() => import('../pages/PatientDetails'))
 
 const routes: RouteObject[] = [
   {
@@ -14,7 +16,11 @@ const routes: RouteObject[] = [
       },
       {
         path: '/patients/:id',
-        element: <PatientDetailsPage />,
+        element: (
+          <Suspense>
+            <LazyPatientsDetailsPage />
+          </Suspense>
+        ),
       },
     ],
   },
