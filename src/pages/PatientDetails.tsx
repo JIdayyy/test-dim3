@@ -1,33 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import patientsHttp from '../services/fetcher/patients/patientsHttp'
-import { Box, Button, Card, Typography } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import Page from '../components/UI/Page'
 import { ArrowBackIosNew } from '@mui/icons-material'
-
-const TextWithLabel = ({ label, text }: { label: string; text: string }) => {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '0.5rem',
-      }}
-    >
-      <Typography
-        sx={{
-          fontWeight: 'bold',
-        }}
-        variant="body1"
-      >
-        {label}
-      </Typography>
-      <Typography variant="body1">{text}</Typography>
-    </Box>
-  )
-}
+import PatientDetailsCard from '../components/Cards/PatientDetailsCard'
 
 const NavigateBack = () => {
   const navigate = useNavigate()
@@ -59,27 +36,13 @@ export default function PatientDetailsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['patient', id],
     queryFn: () => patientsHttp.findOne(id as string),
+    retry: false,
   })
-
-  if (isLoading) return <div>Loading...</div>
-  if (!data) return <div>Patient not found</div>
 
   return (
     <Page>
       <NavigateBack />
-
-      <Card
-        sx={{
-          padding: '1rem',
-          width: '100%',
-        }}
-      >
-        <Typography variant="h4">Patient Details</Typography>
-        <TextWithLabel label="FirstName" text={data?.data.firstName} />
-        <TextWithLabel label="LastName" text={data?.data.lastName} />
-        <TextWithLabel label="BirthDate" text={data?.data.birthDate} />
-        <TextWithLabel label="Sex" text={data?.data.sex} />
-      </Card>
+      <PatientDetailsCard isLoading={isLoading} patient={data?.data} />
     </Page>
   )
 }
