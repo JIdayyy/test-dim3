@@ -10,23 +10,42 @@ const patientColumns = [
     header: 'Patient ID',
     footer: 'Patient ID',
     cell: (props) => (
-      <Typography
-        sx={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          maxWidth: '100px',
-        }}
-      >
-        {props.row.original.id}
-      </Typography>
+      <Link to={`/patients/${props.row.original.id}`}>
+        <Typography
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+          }}
+        >
+          {props.row.original.id}
+        </Typography>
+      </Link>
     ),
   }),
   columnHelper.display({
     id: 'firstName',
     header: 'First Name',
     footer: 'First Name',
-    cell: (props) => props.row.original.firstName,
+    cell: (props) => (
+      <Link to={`/patients/${props.row.original.id}`}>
+        <Typography
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+          }}
+        >
+          {props.row.original.firstName}
+        </Typography>
+      </Link>
+    ),
   }),
   columnHelper.display({
     id: 'lastName',
