@@ -16,12 +16,13 @@ import {
   TableRow,
   Paper,
   TablePagination,
-  Skeleton,
+  styled,
 } from '@mui/material'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import usePagination from './hooks/usePagination'
 import { AxiosResponse } from 'axios'
 import Resizer from './Resizer'
+import TableBodySkeleton from './Skeletton'
 
 interface TableProps<T> {
   columns: ColumnDef<T, unknown>[]
@@ -37,29 +38,18 @@ interface TableProps<T> {
   }) => Promise<AxiosResponse<Dim3ApiResult<T>>>
 }
 
-const TableBodySkeleton = ({
-  number,
-  columnsNumber,
-}: {
-  number: number
-  columnsNumber: number
-}) => {
-  return (
-    <>
-      {Array.from(Array(number).keys()).map((_, index) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <TableRow key={index}>
-          {Array.from(Array(columnsNumber).keys()).map((_, index) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <TableCell key={index}>
-              <Skeleton variant="text" />
-            </TableCell>
-          ))}
-        </TableRow>
-      ))}
-    </>
-  )
-}
+const TableHeaderCell = styled(TableCell)(({ theme }) => ({
+  position: 'relative',
+  color: '#000',
+  fontWeight: 'bold',
+  backgroundColor: theme.palette.primary.light,
+  '&:first-child': {
+    paddingLeft: theme.spacing(3),
+  },
+  '&:last-child': {
+    paddingRight: theme.spacing(3),
+  },
+}))
 
 export default function PaginatedTableComponent<T>({
   columns,
@@ -110,25 +100,26 @@ export default function PaginatedTableComponent<T>({
           },
           '&::-webkit-scrollbar-track': {
             backgroundColor: 'transparent',
+            position: 'absolute',
           },
           '&::-webkit-scrollbar-thumb': {
-            backgroundColor: (theme) => theme.palette.secondary.dark,
+            backgroundColor: (theme) => theme.palette.action.selected,
             borderRadius: 2,
           },
         }}
       >
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
+        <Table stickyHeader>
+          <TableHead
+            sx={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
+            }}
+          >
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableCell
-                    sx={{
-                      position: 'relative',
-                    }}
-                    key={header.id}
-                    style={{ width: header.getSize() }}
-                  >
+                  <TableHeaderCell key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -137,7 +128,7 @@ export default function PaginatedTableComponent<T>({
                         )}
 
                     <Resizer onResize={header.getResizeHandler} />
-                  </TableCell>
+                  </TableHeaderCell>
                 ))}
               </TableRow>
             ))}

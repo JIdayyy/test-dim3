@@ -16,11 +16,14 @@ type AuthContext = {
   logout: () => void
   isAuth: boolean
   loading?: boolean
+  loginLoading?: boolean
+  status?: number
 }
 
 type AuthState = {
   isAuth: boolean
   loading?: boolean
+  status?: number
 }
 
 const authContext = createContext<AuthContext | null>(null)
@@ -33,7 +36,7 @@ const initialState = {
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [authState, setAuthState] = useState<AuthState>(initialState)
 
-  const { mutateAsync: loginMutation } = useMutation({
+  const { mutateAsync: loginMutation, isPending } = useMutation({
     mutationFn: (credentials: TCredentials) => authHttp.signIn(credentials),
     onSuccess: async (data) => {
       setAuthState((prevState) => ({
@@ -44,13 +47,16 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('token', data.data.token)
       axiosInstance.defaults.headers.Authorization = `Bearer ${data.data.token}`
     },
-    onError: () => {
-      setAuthState((prevState) => ({
-        ...prevState,
-        isAuth: false,
-        loading: false,
-      }))
-      localStorage.removeItem('token')
+    onError: (data) => {
+      if (isAxiosError(data)) {
+        setAuthState((prevState) => ({
+          ...prevState,
+          isAuth: false,
+          loading: false,
+          status: data?.response?.status,
+        }))
+        localStorage.removeItem('token')
+      }
     },
   })
 
@@ -79,10 +85,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   })
 
   const login = async (credentials: TCredentials) => {
-    setAuthState((prevState) => ({
-      ...prevState,
-      loading: true,
-    }))
     await loginMutation(credentials)
   }
 
@@ -119,6 +121,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       logout,
       isAuth: authState.isAuth,
       loading: authState.loading,
+      loginLoading: isPending,
+      status: authState.status,
     }),
     [authState]
   )

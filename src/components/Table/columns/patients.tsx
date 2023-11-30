@@ -104,7 +104,7 @@ const MoreButton = ({ patientId }: { patientId: string }) => {
   )
 }
 
-const StyledLink = styled(Link)`
+export const StyledLink = styled(Link)`
   color: ${({ theme }) => theme.palette.text.primary};
   overflow: hidden;
   text-overflow: ellipsis;
