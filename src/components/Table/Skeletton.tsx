@@ -12,9 +12,9 @@ const TableBodySkeleton = ({
       {Array.from(Array(number).keys()).map((_, index) => (
         // eslint-disable-next-line react/no-array-index-key
         <TableRow key={index}>
-          {Array.from(Array(columnsNumber).keys()).map((_, index) => (
+          {Array.from(Array(columnsNumber).keys()).map((__, i) => (
             // eslint-disable-next-line react/no-array-index-key
-            <TableCell key={index}>
+            <TableCell key={i}>
               <Skeleton variant="text" />
             </TableCell>
           ))}

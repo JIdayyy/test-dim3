@@ -8,12 +8,15 @@ import {
   styled,
   CircularProgress,
   FormControl,
+  InputAdornment,
 } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import FormError from '../../components/UI/FormError'
 import LoginBg from '../../assets/login_bg.webp'
+import KeyIcon from '@mui/icons-material/Key'
+import PersonIcon from '@mui/icons-material/Person'
 
 const FormContainer = styled(FormControl)`
   display: flex;
@@ -107,15 +110,32 @@ export default function SignInPage() {
             </Typography>
 
             <TextField
+              autoComplete="off"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    <PersonIcon />
+                  </InputAdornment>
+                ),
+              }}
               fullWidth
-              label="Email"
+              label="Username"
               {...register('username')}
-              placeholder="Email"
+              placeholder="Username"
             />
             <FormError name="username" errors={errors} />
 
             <TextField
+              autoComplete="off"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    <KeyIcon />
+                  </InputAdornment>
+                ),
+              }}
               fullWidth
+              type="password"
               label="Password"
               {...register('password')}
               placeholder="Password"

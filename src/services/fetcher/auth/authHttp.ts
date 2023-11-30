@@ -1,20 +1,22 @@
-import axiosInstance from '../axiosInstance'
+import axios from 'axios'
+
+const BASE_URL = import.meta.env.VITE_API_URL
 
 const authHttp = {
   signIn: (credentials: TCredentials) =>
-    axiosInstance.post<{
+    axios.post<{
       token: string
-    }>('/token-auth', credentials, {
+    }>(`${BASE_URL}/token-auth`, credentials, {
       headers: {
         'Content-Type': 'application/json',
       },
     }),
 
   refreshToken: (token: string) =>
-    axiosInstance.post<{
+    axios.post<{
       token: string
     }>(
-      '/token-refresh',
+      `${BASE_URL}/token-refresh`,
       {
         token,
       },
