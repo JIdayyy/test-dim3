@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
-import { PaletteMode } from '@mui/material'
+import { CssBaseline, PaletteMode } from '@mui/material'
 import { ThemeProvider } from '@emotion/react'
 import { createTheme } from '@mui/material/styles'
 
@@ -25,7 +25,7 @@ export const CustomThemeProvider = ({ children }: { children: ReactNode }) => {
     [mode]
   )
 
-  const darkTheme = createTheme({
+  const theme = createTheme({
     palette: {
       mode,
     },
@@ -33,7 +33,10 @@ export const CustomThemeProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <themeContext.Provider value={colorMode}>
-      <ThemeProvider theme={darkTheme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
     </themeContext.Provider>
   )
 }

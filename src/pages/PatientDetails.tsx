@@ -1,46 +1,33 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import patientsHttp from '../services/fetcher/patients/patientsHttp'
-import { Box, Button, Card, Typography } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import Page from '../components/UI/Page'
 import { ArrowBackIosNew } from '@mui/icons-material'
+import PatientDetailsCard from '../components/Cards/PatientDetailsCard'
 
-const TextWithLabel = ({ label, text }: { label: string; text: string }) => {
+const NavigateBack = () => {
+  const navigate = useNavigate()
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        padding: '0.5rem',
+        width: '100%',
       }}
     >
-      <Typography
+      <Button
         sx={{
-          fontWeight: 'bold',
+          marginBottom: '1rem',
         }}
-        variant="body1"
+        variant="outlined"
+        onClick={() => navigate(-1)}
       >
-        {label}
-      </Typography>
-      <Typography variant="body1">{text}</Typography>
+        <ArrowBackIosNew />
+      </Button>
     </Box>
-  )
-}
-
-const NavigateBack = () => {
-  const navigate = useNavigate()
-  return (
-    <Button
-      sx={{
-        marginBottom: '1rem',
-      }}
-      variant="outlined"
-      onClick={() => navigate(-1)}
-    >
-      <ArrowBackIosNew />
-    </Button>
   )
 }
 
@@ -49,26 +36,13 @@ export default function PatientDetailsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['patient', id],
     queryFn: () => patientsHttp.findOne(id as string),
+    retry: false,
   })
-
-  if (isLoading) return <div>Loading...</div>
-  if (!data) return <div>Patient not found</div>
 
   return (
     <Page>
       <NavigateBack />
-
-      <Card
-        sx={{
-          padding: '1rem',
-        }}
-      >
-        <Typography variant="h4">Patient Details</Typography>
-        <TextWithLabel label="FirstName" text={data?.data.firstName} />
-        <TextWithLabel label="LastName" text={data?.data.lastName} />
-        <TextWithLabel label="BirthDate" text={data?.data.birthDate} />
-        <TextWithLabel label="Sex" text={data?.data.sex} />
-      </Card>
+      <PatientDetailsCard isLoading={isLoading} patient={data?.data} />
     </Page>
   )
 }

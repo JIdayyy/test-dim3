@@ -18,7 +18,7 @@ export default function App() {
             </AuthenticatedRouteWrapper>
           </Router>
         </AuthContextProvider>
-      </CustomThemeProvider>{' '}
+      </CustomThemeProvider>
     </QueryClientProvider>
   )
 }

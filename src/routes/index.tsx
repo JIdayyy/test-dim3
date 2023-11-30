@@ -1,7 +1,17 @@
 import { ReactNode } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import AuthRoutes from './auth.routes'
-import { Box, CircularProgress } from '@mui/material'
+import { Box, CircularProgress, styled } from '@mui/material'
+
+const LoadingContainer = styled(Box)`
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: ${({ theme }) => theme.palette.background.default};
+`
 
 export default function AuthenticatedRouteWrapper({
   children,
@@ -12,16 +22,7 @@ export default function AuthenticatedRouteWrapper({
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          width: '100vw',
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: ({ palette }) => palette.background.default,
-        }}
-      >
+      <LoadingContainer>
         <CircularProgress
           sx={{
             position: 'absolute',
@@ -30,7 +31,7 @@ export default function AuthenticatedRouteWrapper({
             transform: 'translate(-50%, -50%)',
           }}
         />
-      </Box>
+      </LoadingContainer>
     )
   }
 

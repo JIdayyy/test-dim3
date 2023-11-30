@@ -67,7 +67,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       axiosInstance.defaults.headers.Authorization = `Bearer ${data.data.token}`
     },
     onError: (data) => {
-      if (isAxiosError(data) && data.status === 401) {
+      if (isAxiosError(data) && data?.response?.status === 401) {
         setAuthState((prevState) => ({
           ...prevState,
           isAuth: false,

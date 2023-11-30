@@ -17,16 +17,17 @@ import {
   Paper,
   TablePagination,
   Skeleton,
-  Box,
 } from '@mui/material'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import usePagination from './hooks/usePagination'
 import { AxiosResponse } from 'axios'
+import Resizer from './Resizer'
 
 interface TableProps<T> {
   columns: ColumnDef<T, unknown>[]
   defaultPageSize?: number
   defaultPageIndex?: number
+  name: string
   fetchFn: ({
     page,
     pageSize,
@@ -36,7 +37,7 @@ interface TableProps<T> {
   }) => Promise<AxiosResponse<Dim3ApiResult<T>>>
 }
 
-const TableBodySkeletton = ({
+const TableBodySkeleton = ({
   number,
   columnsNumber,
 }: {
@@ -60,11 +61,12 @@ const TableBodySkeletton = ({
   )
 }
 
-export default function TableComponent<T>({
+export default function PaginatedTableComponent<T>({
   columns,
   defaultPageSize,
   defaultPageIndex,
   fetchFn,
+  name,
 }: TableProps<T>) {
   const { paginationState, handlePageChange, handlePageSizeChange } =
     usePagination({
@@ -73,7 +75,7 @@ export default function TableComponent<T>({
     })
 
   const { data, isLoading } = useQuery({
-    queryKey: ['patients', paginationState.page, paginationState.pageSize],
+    queryKey: [name, paginationState.page, paginationState.pageSize],
     queryFn: () =>
       fetchFn({
         page: paginationState.page,
@@ -94,12 +96,27 @@ export default function TableComponent<T>({
     manualPagination: true,
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
-    debugTable: true,
+    debugTable: import.meta.env.NODE_ENV !== 'development',
   })
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 800, height: 670 }}>
+      <TableContainer
+        sx={{
+          maxHeight: 800,
+          height: 670,
+          '&::-webkit-scrollbar': {
+            width: 4,
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: (theme) => theme.palette.secondary.dark,
+            borderRadius: 2,
+          },
+        }}
+      >
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -118,19 +135,18 @@ export default function TableComponent<T>({
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                    <div
-                      {...{
-                        onMouseDown: header.getResizeHandler(),
-                        onTouchStart: header.getResizeHandler(),
-                        className: `hover:bg-white  absolute touch cursor-col-resize right-0 top-0  w-[2px] h-full bg-gray-300 z-50`,
-                      }}
-                    />
+
+                    <Resizer onResize={header.getResizeHandler} />
                   </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableHead>
-          <TableBody>
+          <TableBody
+            sx={{
+              minHeight: 600,
+            }}
+          >
             {!isLoading ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
@@ -148,7 +164,7 @@ export default function TableComponent<T>({
                 </TableRow>
               ))
             ) : (
-              <TableBodySkeletton
+              <TableBodySkeleton
                 number={paginationState.pageSize}
                 columnsNumber={columns.length}
               />
@@ -156,29 +172,27 @@ export default function TableComponent<T>({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          width: '100%',
-        }}
-      >
-        <TablePagination
-          sx={{
-            width: '100%',
-          }}
-          count={data?.data.totalElements || 0}
-          page={paginationState.page}
-          rowsPerPage={paginationState.pageSize}
-          onRowsPerPageChange={async (event) => {
-            handlePageSizeChange(+event.target.value)
-          }}
-          onPageChange={async (_, newPage) => {
-            handlePageChange(newPage)
-          }}
-        />
-      </Box>
+      {/* This is a little trick to make the pagination component sticky to bottom and avoid console warnings */}
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TablePagination
+              sx={{
+                width: '100%',
+              }}
+              count={data?.data.totalElements || 0}
+              page={paginationState.page}
+              rowsPerPage={paginationState.pageSize}
+              onRowsPerPageChange={async (event) => {
+                handlePageSizeChange(+event.target.value)
+              }}
+              onPageChange={async (_, newPage) => {
+                handlePageChange(newPage)
+              }}
+            />
+          </TableRow>
+        </TableBody>
+      </Table>
     </Paper>
   )
 }

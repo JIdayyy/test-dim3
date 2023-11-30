@@ -7,7 +7,12 @@ export default function Navbar() {
   const { toggleColorMode, theme } = useThemeContext()
 
   return (
-    <AppBar position="static">
+    <AppBar
+      sx={{
+        zIndex: 10,
+      }}
+      position="static"
+    >
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Patient Management

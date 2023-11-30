@@ -1,17 +1,25 @@
 import { Container } from '@mui/material'
 import { ReactNode } from 'react'
 
-export default function Page({ children }: { children: ReactNode }) {
+export default function Page({
+  children,
+  center,
+}: {
+  children: ReactNode
+  center?: boolean
+}) {
   return (
     <Container
       sx={{
         padding: '1rem',
         backgroundColor: ({ palette }) => palette.background.default,
         flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        ...(center && {
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }),
       }}
     >
       {children}
