@@ -79,9 +79,8 @@ export default function SignInPage() {
 
   return (
     <PageContainer>
-      <LeftPanelContainer>
-        <Typography>TEST</Typography>
-      </LeftPanelContainer>
+      <LeftPanelContainer />
+
       <FlexContainer>
         <FormContainer onSubmit={handleSubmit(login)}>
           <Stack spacing={2}>
